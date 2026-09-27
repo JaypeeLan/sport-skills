@@ -24,14 +24,19 @@
 .DS_Store
 *.pem
 
+# editor and agent tooling, regenerated locally
+AGENTS.md
+.claude/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — the example is committed so a clone knows what to fill in
 .env*
+!.env.example
 
 # vercel
 .vercel
