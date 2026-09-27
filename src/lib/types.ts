@@ -14,7 +14,7 @@ export interface Curriculum {
   modules: Module[]
 }
 
-export interface Module {
+interface Module {
   title: string
   level: 'beginner' | 'intermediate' | 'advanced'
   description: string
@@ -39,23 +39,4 @@ export interface LessonContent {
   steps: { instruction: string; detail: string; focus: string }[]
   mistakes: { mistake: string; fix: string }[]
   practice: string
-}
-
-export interface Lesson {
-  id: string
-  track_id: string
-  module_index: number
-  lesson_index: number
-  title: string
-  content: LessonContent | null
-  created_at: string
-}
-
-export interface Progress {
-  id: string
-  user_id: string
-  track_id: string
-  module_index: number
-  lesson_index: number
-  completed_at: string
 }
