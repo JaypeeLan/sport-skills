@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { listTracks, getCompleted, getUser } from '@/lib/db'
 import { getActivity } from '@/lib/activities'
@@ -5,6 +6,12 @@ import { trackCover } from '@/lib/images'
 import { Button } from '@/components/ui/button'
 import SignOutButton from '@/components/SignOutButton'
 import { Plus, Trophy, Flame, BookOpen } from 'lucide-react'
+
+// Personal, signed-in content — never show it in search results.
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  robots: { index: false, follow: false },
+}
 
 export default async function DashboardPage() {
   const user = await getUser()

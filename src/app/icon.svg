@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="SkillPath">
+  <rect width="32" height="32" rx="7.5" fill="#020617" />
+  <rect x="6" y="20" width="5.5" height="6" rx="2.75" fill="#34d399" />
+  <rect x="13.25" y="15" width="5.5" height="11" rx="2.75" fill="#10b981" />
+  <rect x="20.5" y="9.5" width="5.5" height="16.5" rx="2.75" fill="#059669" />
+  <circle cx="23.25" cy="6.5" r="3" fill="#6ee7b7" />
+</svg>

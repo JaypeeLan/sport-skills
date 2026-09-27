@@ -1,3 +1,5 @@
+import { cache } from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getTrack, getCompleted, getLesson, saveLesson } from '@/lib/db'
@@ -9,6 +11,27 @@ import Demonstration from '@/components/Demonstration'
 import CompleteButton from './CompleteButton'
 import { ArrowLeft, Lock, Package, Repeat, TriangleAlert } from 'lucide-react'
 
+// Shared between generateMetadata and the page so the track is fetched once.
+const loadTrack = cache(getTrack)
+
+// Lessons live behind an account, so they are never indexed.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; m: string; l: string }>
+}): Promise<Metadata> {
+  const { id, m, l } = await params
+  const track = await loadTrack(id)
+  const lesson = track?.curriculum?.modules[Number(m)]?.lessons[Number(l)]
+  if (!lesson) return { title: 'Lesson' }
+
+  return {
+    title: lesson.title,
+    description: lesson.summary,
+    robots: { index: false, follow: false },
+  }
+}
+
 export default async function LessonPage({
   params,
 }: {
@@ -18,7 +41,7 @@ export default async function LessonPage({
   const mi = Number(m)
   const li = Number(l)
 
-  const track = await getTrack(id)
+  const track = await loadTrack(id)
   if (!track?.curriculum) notFound()
 
   const currentModule = track.curriculum.modules[mi]

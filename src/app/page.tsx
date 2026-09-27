@@ -1,10 +1,46 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ACTIVITIES } from '@/lib/activities'
 import { getUser } from '@/lib/db'
+import { SITE } from '@/lib/site'
 import { Button } from '@/components/ui/button'
 import HeroCarousel from '@/components/HeroCarousel'
 import { ArrowRight } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: `${SITE.name} — ${SITE.tagline}`,
+  description: SITE.description,
+  alternates: {
+    canonical: '/',
+  },
+}
+
+// Structured data so search engines understand the product, not just the copy.
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: SITE.name,
+      url: SITE.url,
+      description: SITE.description,
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: SITE.name,
+      applicationCategory: 'EducationalApplication',
+      operatingSystem: 'Web',
+      description: SITE.description,
+      url: SITE.url,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+    },
+  ],
+}
 
 export default async function Home() {
   // Signed-in learners belong on their dashboard, not the marketing page.
@@ -12,6 +48,11 @@ export default async function Home() {
 
   return (
     <main className="relative flex h-dvh flex-col overflow-hidden bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
       <HeroCarousel />
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">

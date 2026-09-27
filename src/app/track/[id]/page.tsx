@@ -1,3 +1,5 @@
+import { cache } from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getTrack, getCompleted } from '@/lib/db'
@@ -13,9 +15,30 @@ const LEVEL_STYLES: Record<string, string> = {
   advanced: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
 }
 
+// Shared between generateMetadata and the page so the track is fetched once.
+const loadTrack = cache(getTrack)
+
+// Tracks are personal, signed-in content — keep them out of search results.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const track = await loadTrack(id)
+  if (!track?.curriculum) return { title: 'Track' }
+
+  const activity = getActivity(track.activity)
+  return {
+    title: `${activity?.name ?? track.activity} — ${track.goal}`,
+    description: track.curriculum.summary,
+    robots: { index: false, follow: false },
+  }
+}
+
 export default async function TrackPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const track = await getTrack(id)
+  const track = await loadTrack(id)
   if (!track?.curriculum) notFound()
 
   const completed = await getCompleted(id)
