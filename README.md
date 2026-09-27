@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SkillPath
 
-## Getting Started
+An interactive learning platform that takes someone from complete beginner to
+advanced in any sport or physical skill, through personalised, visual,
+step-by-step learning tracks.
 
-First, run the development server:
+The interesting part isn't the number of sports. It's that there is **one
+learning engine**: adding a sport means adding its goals to a data file, not
+building a separate experience. Onboarding, curriculum generation and lesson
+rendering are all activity-agnostic.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## How it works
+
+```
+Activity → Goal → Experience → Track → Module → Lesson
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. The learner picks an activity (62 available), then a goal specific to that
+   activity, then their current experience level.
+2. Groq generates a progressive curriculum — 4–6 modules from foundations to
+   advanced, each with concrete, practisable lessons.
+3. Lessons are generated on demand and cached, so returning to a lesson shows
+   the same content the learner practised against.
+4. Modules unlock in order, so foundations can't be skipped.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Goals matter: *"learn to swim from scratch"* and *"improve freestyle"* produce
+genuinely different tracks. Experience level shifts where the track starts — an
+experienced learner's track opens at intermediate rather than wasting their time.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## The visual layer
 
-## Learn More
+Physical skills can't be taught as a wall of text, but they also can't be taught
+with wrong information. Demonstrations resolve to **real coaching footage** via
+the YouTube Data API rather than generated imagery — a generated body position
+that is subtly wrong teaches bad technique, which is worse than no image at all.
 
-To learn more about Next.js, take a look at the following resources:
+AI-generated art is used only for track cover images, where being decorative is
+the whole job.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Each step also carries a short body-focus cue ("Head position", "Lead hand") so
+the learner knows what to concentrate on, plus the common mistakes that quietly
+build bad habits.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Stack
 
-## Deploy on Vercel
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router, server components, server actions) |
+| Auth + DB | Supabase (Postgres + Row Level Security) |
+| AI | Groq (`openai/gpt-oss-20b`) for curriculum and lesson generation |
+| Video | YouTube Data API v3 |
+| Styling | Tailwind CSS v4 + shadcn/ui |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Running locally
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm install
+cp .env.example .env.local   # then fill in the values
+npm run dev
+```
+
+Run `supabase-schema.sql` in the Supabase SQL editor to create the tables and
+row-level security policies.
+
+### Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
+| `GROQ_API_KEY` | Curriculum and lesson generation |
+| `YOUTUBE_API_KEY` | Resolves lessons to real coaching videos |
+
+`YOUTUBE_API_KEY` is optional — without it, lessons fall back to a search link
+instead of an embedded video.
+
+## Data model
+
+- `tracks` — one learner pursuing one goal in one activity, with the generated
+  curriculum stored as JSON
+- `lessons` — generated lesson content, cached per track/module/lesson
+- `progress` — one row per completed lesson
+
+Every table is protected by row-level security keyed on `auth.uid()`, so a
+learner can only ever read their own data.
+
+## Adding a sport
+
+Add an entry to `ACTIVITIES` in `src/lib/activities.ts` with an id, name, icon,
+category and its own list of goals. Nothing else needs to change.
