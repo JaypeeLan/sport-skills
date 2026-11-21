@@ -60,6 +60,19 @@ in the API.
 
 After the mobile app (`skillpath-mobile`) ships, this web app becomes a landing page.
 
+## Environments
+
+The web app runs on Vercel. Each environment uses the matching API.
+
+| Environment | Branch | Vercel | `API_URL` |
+|---|---|---|---|
+| Staging | `staging` | Preview deployment of the `staging` branch | The staging API, `.../v1` |
+| Production | `main` | Production deployment | The production API, `.../v1` |
+
+Changes go through pull requests: feature branch → `staging` → `main`.
+
+In Vercel, set `API_URL` for Production to the production API. Set it for Preview, limited to the `staging` branch, to the staging API.
+
 ## Running locally
 
 1. Start the API. Its README explains the setup.
@@ -81,7 +94,7 @@ After the mobile app (`skillpath-mobile`) ships, this web app becomes a landing 
 
 | Variable | Purpose |
 |---|---|
-| `API_URL` | Base URL of the API. Default: `http://localhost:4000` |
+| `API_URL` | Base URL of the API, including the version. Default: `http://localhost:4000/v1` |
 
 ## Adding a sport
 
