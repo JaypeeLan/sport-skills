@@ -6,12 +6,14 @@ import { redirect } from 'next/navigation'
 import { api, ApiError, publicApi, SESSION_COOKIE } from '@/lib/api'
 
 type AuthResult = { error: string } | undefined
+type SessionPath = '/auth/signup' | '/auth/login' | '/auth/google' | '/auth/password/reset'
 
-async function startSession(path: '/auth/signup' | '/auth/login', email: string, password: string): Promise<AuthResult> {
+// Calls an API route that returns a session, and stores the token in an httpOnly cookie.
+async function startSession(path: SessionPath, body: Record<string, string>): Promise<AuthResult> {
   try {
     const { token, expiresAt } = await publicApi<{ token: string; expiresAt: string }>(path, {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(body),
     })
     ;(await cookies()).set(SESSION_COOKIE, token, {
       httpOnly: true,
@@ -28,11 +30,34 @@ async function startSession(path: '/auth/signup' | '/auth/login', email: string,
 }
 
 export async function signUpAction(email: string, password: string) {
-  return startSession('/auth/signup', email, password)
+  return startSession('/auth/signup', { email, password })
 }
 
 export async function signInAction(email: string, password: string) {
-  return startSession('/auth/login', email, password)
+  return startSession('/auth/login', { email, password })
+}
+
+// The credential is the ID token from Google Identity Services. The API verifies it.
+export async function googleSignInAction(credential: string) {
+  return startSession('/auth/google', { idToken: credential })
+}
+
+// Always reports success, like the API, so the page does not reveal which emails have an account.
+export async function requestPasswordResetAction(email: string): Promise<AuthResult> {
+  try {
+    await publicApi('/auth/password/forgot', { method: 'POST', body: JSON.stringify({ email }) })
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 429) {
+      return { error: 'Too many requests. Wait a minute and try again.' }
+    }
+    if (error instanceof ApiError && error.status < 500) return { error: error.message }
+    return { error: 'Something went wrong. Please try again.' }
+  }
+}
+
+// Sets the new password and signs the user in on this device. Other devices are signed out.
+export async function resetPasswordAction(email: string, code: string, password: string) {
+  return startSession('/auth/password/reset', { email, code, password })
 }
 
 // Generates the curriculum and saves the track in one API call.

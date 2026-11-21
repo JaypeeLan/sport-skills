@@ -95,6 +95,7 @@ In Vercel, set `API_URL` for Production to the production API. Set it for Previe
 | Variable | Purpose |
 |---|---|
 | `API_URL` | Base URL of the API, including the version. Default: `http://localhost:4000/v1` |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Public Google OAuth web client id. Without it, the "Sign in with Google" button is hidden |
 
 ## Adding a sport
 
