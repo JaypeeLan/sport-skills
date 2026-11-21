@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signInAction, signUpAction } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
@@ -26,14 +26,11 @@ function AuthForm() {
     setLoading(true)
     setError('')
 
-    const supabase = createClient()
-    const { error } =
-      mode === 'signup'
-        ? await supabase.auth.signUp({ email, password })
-        : await supabase.auth.signInWithPassword({ email, password })
+    const result =
+      mode === 'signup' ? await signUpAction(email, password) : await signInAction(email, password)
 
-    if (error) {
-      setError(error.message)
+    if (result?.error) {
+      setError(result.error)
       setLoading(false)
       return
     }
@@ -85,10 +82,10 @@ function AuthForm() {
                 id="password"
                 type="password"
                 required
-                minLength={6}
+                minLength={mode === 'signup' ? 8 : undefined}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 6 characters"
+                placeholder={mode === 'signup' ? 'At least 8 characters' : ''}
                 className="border-slate-800 bg-slate-900 text-white"
               />
             </div>

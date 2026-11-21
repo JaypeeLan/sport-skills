@@ -1,6 +1,5 @@
 export interface Track {
   id: string
-  user_id: string
   activity: string
   goal: string
   experience: string | null
