@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import { api, ApiError, publicApi, SESSION_COOKIE } from './api'
 import type { Curriculum, LessonContent, Track } from './types'
 
-// Data now comes from the SkillPath API. These functions keep the shapes the
+// Data now comes from the SportPath API. These functions keep the shapes the
 // pages already use (snake_case fields), so the pages barely changed.
 
 interface ApiTrack {

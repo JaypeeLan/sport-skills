@@ -1,4 +1,4 @@
-# SkillPath
+# SportPath
 
 An interactive learning platform that takes someone from complete beginner to
 advanced in any sport or physical skill, through personalised, visual,
@@ -46,11 +46,11 @@ build bad habits.
 | Layer | Choice |
 |---|---|
 | Web | Next.js 16 (App Router, server components, server actions) |
-| Backend | The SkillPath API in the private `skillpath-api` repository |
+| Backend | The SportPath API in the private `skillpath-api` repository |
 | Styling | Tailwind CSS v4 + shadcn/ui |
 
 ```
-Browser -> Next.js (httpOnly session cookie) -> SkillPath API (Bearer token) -> Postgres
+Browser -> Next.js (httpOnly session cookie) -> SportPath API (Bearer token) -> Postgres
 ```
 
 The browser never calls the API directly. Next.js server code calls it with the

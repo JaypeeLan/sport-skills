@@ -54,7 +54,7 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
       <header className="border-b border-slate-900">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-6">
           <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
-            SkillPath
+            SportPath
           </Link>
           <Link href="/onboarding" className="text-sm text-slate-400 hover:text-white">
             New track
