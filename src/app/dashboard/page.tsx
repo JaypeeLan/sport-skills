@@ -46,7 +46,7 @@ export default async function DashboardPage() {
       <header className="border-b border-slate-900">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
-            SkillPath
+            SportPath
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/onboarding">

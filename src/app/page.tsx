@@ -56,7 +56,7 @@ export default async function Home() {
       <HeroCarousel />
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <span className="text-lg font-semibold tracking-tight">SkillPath</span>
+        <span className="text-lg font-semibold tracking-tight">SportPath</span>
         <div className="flex items-center gap-4">
           <Link href="/auth?mode=login" className="text-sm text-slate-300 hover:text-white">
             Sign in
@@ -79,7 +79,7 @@ export default async function Home() {
         </h1>
 
         <p className="mt-6 max-w-xl text-pretty text-base text-slate-300 sm:text-lg">
-          Tell us what you want to learn and why. SkillPath builds a personalised, step-by-step
+          Tell us what you want to learn and why. SportPath builds a personalised, step-by-step
           track — real technique, real demonstrations, and the mistakes to avoid.
         </p>
 
