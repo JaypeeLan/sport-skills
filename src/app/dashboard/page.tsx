@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { listTracks, getCompleted, getUser } from '@/lib/db'
+import { listTracks, getUser } from '@/lib/db'
 import { getActivity } from '@/lib/activities'
 import { trackCover } from '@/lib/images'
 import { Button } from '@/components/ui/button'
@@ -17,22 +17,20 @@ export default async function DashboardPage() {
   const user = await getUser()
   const tracks = await listTracks()
 
-  const withProgress = await Promise.all(
-    tracks.map(async (track) => {
-      const completed = await getCompleted(track.id)
-      const total = track.curriculum?.modules.reduce((n, m) => n + m.lessons.length, 0) ?? 0
-      const done = completed.length
+  const withProgress = tracks.map((track) => {
+    const { completed } = track
+    const total = track.curriculum?.modules.reduce((n, m) => n + m.lessons.length, 0) ?? 0
+    const done = completed.length
 
-      // The next lesson is the first incomplete one in curriculum order.
-      const doneKeys = new Set(completed.map((c) => `${c.module_index}:${c.lesson_index}`))
-      const next =
-        track.curriculum?.modules
-          .flatMap((mod, mi) => mod.lessons.map((les, li) => ({ m: mi, l: li, title: les.title })))
-          .find(({ m, l }) => !doneKeys.has(`${m}:${l}`)) ?? null
+    // The next lesson is the first incomplete one in curriculum order.
+    const doneKeys = new Set(completed.map((c) => `${c.module_index}:${c.lesson_index}`))
+    const next =
+      track.curriculum?.modules
+        .flatMap((mod, mi) => mod.lessons.map((les, li) => ({ m: mi, l: li, title: les.title })))
+        .find(({ m, l }) => !doneKeys.has(`${m}:${l}`)) ?? null
 
-      return { track, done, total, next }
-    })
-  )
+    return { track, done, total, next }
+  })
 
   const totalDone = withProgress.reduce((n, t) => n + t.done, 0)
   const finished = withProgress.filter((t) => t.total > 0 && t.done === t.total).length

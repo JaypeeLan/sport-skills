@@ -45,47 +45,47 @@ build bad habits.
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 16 (App Router, server components, server actions) |
-| Auth + DB | Supabase (Postgres + Row Level Security) |
-| AI | OpenRouter (`openai/gpt-oss-20b` by default) for curriculum and lesson generation |
-| Video | YouTube Data API v3 |
+| Web | Next.js 16 (App Router, server components, server actions) |
+| Backend | The SkillPath API in the private `skillpath-api` repository |
 | Styling | Tailwind CSS v4 + shadcn/ui |
+
+```
+Browser -> Next.js (httpOnly session cookie) -> SkillPath API (Bearer token) -> Postgres
+```
+
+The browser never calls the API directly. Next.js server code calls it with the
+session token from an httpOnly cookie. The web app holds no secrets and has no
+database access. Accounts, tracks, lessons, progress and AI generation all live
+in the API.
+
+After the mobile app (`skillpath-mobile`) ships, this web app becomes a landing page.
 
 ## Running locally
 
-```bash
-npm install
-cp .env.example .env.local   # then fill in the values
-npm run dev
-```
+1. Start the API. Its README explains the setup.
+2. Configure and start the web app. It runs on http://localhost:3000.
 
-Run `supabase-schema.sql` in the Supabase SQL editor to create the tables and
-row-level security policies.
+   ```bash
+   npm install
+   ```
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   ```bash
+   npm run dev
+   ```
 
 ### Environment variables
 
 | Variable | Purpose |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
-| `OPENROUTER_API_KEY` | Curriculum and lesson generation |
-| `OPENROUTER_MODEL` | Optional. OpenRouter model id. Default: `openai/gpt-oss-20b` |
-| `YOUTUBE_API_KEY` | Resolves lessons to real coaching videos |
-
-`YOUTUBE_API_KEY` is optional — without it, lessons fall back to a search link
-instead of an embedded video.
-
-## Data model
-
-- `tracks` — one learner pursuing one goal in one activity, with the generated
-  curriculum stored as JSON
-- `lessons` — generated lesson content, cached per track/module/lesson
-- `progress` — one row per completed lesson
-
-Every table is protected by row-level security keyed on `auth.uid()`, so a
-learner can only ever read their own data.
+| `API_URL` | Base URL of the API. Default: `http://localhost:4000` |
 
 ## Adding a sport
 
-Add an entry to `ACTIVITIES` in `src/lib/activities.ts` with an id, name, icon,
-category and its own list of goals. Nothing else needs to change.
+Add an entry to `ACTIVITIES` in `src/activities/catalog.ts` in the API, with an
+id, name, icon, category and its own list of goals. Then copy the same entry to
+`src/lib/activities.ts` here. The web app keeps its own copy until it reads the
+catalog from the API's `/activities` route.

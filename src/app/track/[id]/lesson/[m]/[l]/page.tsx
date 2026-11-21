@@ -2,10 +2,8 @@ import { cache } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getTrack, getCompleted, getLesson, saveLesson } from '@/lib/db'
-import { generateLesson } from '@/lib/generate'
+import { getTrack, getCompleted, getLessonContent } from '@/lib/db'
 import { isModuleUnlocked } from '@/lib/progression'
-import { getActivity } from '@/lib/activities'
 import { Button } from '@/components/ui/button'
 import Demonstration from '@/components/Demonstration'
 import CompleteButton from './CompleteButton'
@@ -69,18 +67,7 @@ export default async function LessonPage({
 
   // Generated once, then cached, so returning to a lesson shows the same
   // content the learner practised against.
-  let content = await getLesson(id, mi, li)
-  if (!content) {
-    content = await generateLesson({
-      activity: getActivity(track.activity)?.name ?? track.activity,
-      goal: track.goal,
-      experience: track.experience,
-      moduleTitle: currentModule.title,
-      lessonTitle: lesson.title,
-      lessonSummary: lesson.summary,
-    })
-    if (content) await saveLesson(id, mi, li, lesson.title, content)
-  }
+  const content = await getLessonContent(id, mi, li)
 
   const complete = doneKeys.has(`${mi}:${li}`)
   const next = currentModule.lessons[li + 1]
