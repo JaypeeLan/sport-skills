@@ -26,14 +26,16 @@ declare global {
   }
 }
 
-const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-
 // Renders Google's own "Sign in with Google" button. Google returns an ID token,
 // which onCredential sends to the API through a server action.
+// The client id comes from the server at request time (GOOGLE_CLIENT_ID), so one
+// build can serve staging and production.
 export default function GoogleButton({
+  clientId,
   text,
   onCredential,
 }: {
+  clientId: string | undefined
   text: 'signin_with' | 'signup_with' | 'continue_with'
   onCredential: (credential: string) => void
 }) {
@@ -45,9 +47,9 @@ export default function GoogleButton({
   }, [onCredential])
 
   const render = useCallback(() => {
-    if (!CLIENT_ID || !window.google || !container.current) return
+    if (!clientId || !window.google || !container.current) return
     window.google.accounts.id.initialize({
-      client_id: CLIENT_ID,
+      client_id: clientId,
       callback: (response) => callback.current(response.credential),
       ux_mode: 'popup',
     })
@@ -58,14 +60,14 @@ export default function GoogleButton({
       text,
       width: container.current.offsetWidth || 320,
     })
-  }, [text])
+  }, [clientId, text])
 
   // Covers the case where the script loaded before this component mounted.
   useEffect(() => {
     render()
   }, [render])
 
-  if (!CLIENT_ID) return null
+  if (!clientId) return null
 
   return (
     <>
