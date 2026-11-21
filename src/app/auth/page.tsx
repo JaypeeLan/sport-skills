@@ -58,7 +58,7 @@ function AuthForm() {
     <main className="flex min-h-screen flex-col bg-slate-950 text-white">
       <header className="mx-auto w-full max-w-6xl px-6 py-6">
         <Link href="/" className="text-lg font-semibold tracking-tight">
-          SkillPath
+          SportPath
         </Link>
       </header>
 
