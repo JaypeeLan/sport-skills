@@ -1,83 +1,86 @@
 import 'server-only'
-import { createClient } from './supabase/server'
+import { cache } from 'react'
+import { cookies } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { api, ApiError, publicApi, SESSION_COOKIE } from './api'
 import type { Curriculum, LessonContent, Track } from './types'
 
-export async function getUser() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  return user
-}
+// Data now comes from the SkillPath API. These functions keep the shapes the
+// pages already use (snake_case fields), so the pages barely changed.
 
-export async function listTracks(): Promise<Track[]> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('tracks')
-    .select('*')
-    .order('created_at', { ascending: false })
-  return data ?? []
-}
-
-export async function getTrack(id: string): Promise<Track | null> {
-  const supabase = await createClient()
-  const { data } = await supabase.from('tracks').select('*').eq('id', id).single()
-  return data
-}
-
-export async function createTrack(input: {
+interface ApiTrack {
+  id: string
   activity: string
   goal: string
-  experience: string
-  curriculum: Curriculum
-}) {
-  const supabase = await createClient()
-  const user = await getUser()
-  if (!user) throw new Error('Not signed in')
-
-  const { data, error } = await supabase
-    .from('tracks')
-    .insert({ ...input, user_id: user.id })
-    .select('id')
-    .single()
-
-  if (error) throw error
-  return data.id as string
+  experience: string | null
+  level: string
+  curriculum: Curriculum | null
+  createdAt: string
+  completed: { moduleIndex: number; lessonIndex: number }[]
 }
 
-export async function getCompleted(trackId: string) {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('progress')
-    .select('module_index, lesson_index')
-    .eq('track_id', trackId)
-  return data ?? []
+export interface CompletedLesson {
+  module_index: number
+  lesson_index: number
 }
 
-export async function getLesson(trackId: string, m: number, l: number) {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('lessons')
-    .select('content')
-    .eq('track_id', trackId)
-    .eq('module_index', m)
-    .eq('lesson_index', l)
-    .maybeSingle()
-  return (data?.content as LessonContent | undefined) ?? null
+export type TrackWithProgress = Track & { completed: CompletedLesson[] }
+
+function toTrack(t: ApiTrack): TrackWithProgress {
+  return {
+    id: t.id,
+    activity: t.activity,
+    goal: t.goal,
+    experience: t.experience,
+    level: t.level,
+    curriculum: t.curriculum,
+    created_at: t.createdAt,
+    completed: t.completed.map((c) => ({ module_index: c.moduleIndex, lesson_index: c.lessonIndex })),
+  }
 }
 
-export async function saveLesson(
-  trackId: string,
-  m: number,
-  l: number,
-  title: string,
-  content: LessonContent
-) {
-  const supabase = await createClient()
-  await supabase
-    .from('lessons')
-    .upsert(
-      { track_id: trackId, module_index: m, lesson_index: l, title, content },
-      { onConflict: 'track_id,module_index,lesson_index' }
-    )
+// Returns null when signed out or when the session expired.
+export const getUser = cache(async (): Promise<{ id: string; email: string } | null> => {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value
+  if (!token) return null
+  try {
+    return await publicApi('/auth/me', {}, token)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) return null
+    throw error
+  }
+})
+
+export async function listTracks(): Promise<TrackWithProgress[]> {
+  return (await api<ApiTrack[]>('/tracks')).map(toTrack)
+}
+
+// Cached per request, so getTrack and getCompleted share one API call.
+const fetchTrack = cache(async (id: string): Promise<TrackWithProgress | null> => {
+  try {
+    return toTrack(await api<ApiTrack>(`/tracks/${encodeURIComponent(id)}`))
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) return null
+    throw error
+  }
+})
+
+export async function getTrack(id: string): Promise<Track | null> {
+  return fetchTrack(id)
+}
+
+export async function getCompleted(trackId: string): Promise<CompletedLesson[]> {
+  return (await fetchTrack(trackId))?.completed ?? []
+}
+
+// The API returns the cached lesson, or writes and caches it on first open.
+// Returns null when generation fails, so the page can show its retry message.
+export async function getLessonContent(trackId: string, m: number, l: number): Promise<LessonContent | null> {
+  try {
+    return await api<LessonContent>(`/tracks/${encodeURIComponent(trackId)}/lessons/${m}/${l}`)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) notFound()
+    if (error instanceof ApiError && error.status >= 500) return null
+    throw error
+  }
 }

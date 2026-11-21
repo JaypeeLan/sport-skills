@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { ACTIVITIES, EXPERIENCE_LEVELS, getActivity } from '@/lib/activities'
-import { saveTrackAction } from '@/app/actions'
+import { createTrackAction } from '@/app/actions'
 import ActivityPicker from '@/components/ActivityPicker'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 
@@ -26,23 +26,9 @@ function Onboarding() {
     setError('')
 
     try {
-      const res = await fetch('/api/generate-track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ activity: activity.name, goal, experience: exp }),
-      })
-      if (!res.ok) throw new Error('Could not build your track')
-
-      const curriculum = await res.json()
-      if (!curriculum.modules?.length) throw new Error('Could not build your track')
-
-      const id = await saveTrackAction({
-        activity: activity.id,
-        goal,
-        experience: exp,
-        curriculum,
-      })
-      router.push(`/track/${id}`)
+      const result = await createTrackAction({ activity: activity.id, goal, experience: exp })
+      if ('error' in result) throw new Error(result.error)
+      router.push(`/track/${result.id}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
       setLoading(false)
