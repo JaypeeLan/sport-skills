@@ -62,16 +62,18 @@ After the mobile app (`skillpath-mobile`) ships, this web app becomes a landing 
 
 ## Environments
 
-The web app runs on Vercel. Each environment uses the matching API.
+The web app runs on Cloudflare Workers, through the OpenNext adapter. `wrangler.jsonc` defines both workers.
 
-| Environment | Branch | Vercel | `API_URL` |
-|---|---|---|---|
-| Staging | `staging` | Preview deployment of the `staging` branch | The staging API, `.../v1` |
-| Production | `main` | Production deployment | The production API, `.../v1` |
+| Environment | Branch | Worker | URL | API |
+|---|---|---|---|---|
+| Staging | `staging` | `sportpath-web-staging` | https://staging.sportpath.app | https://api-staging.sportpath.app/v1 |
+| Production | `main` | `sportpath-web` | https://sportpath.app | https://api.sportpath.app/v1 |
 
-Changes go through pull requests: feature branch → `staging` → `main`.
+Changes go through pull requests: feature branch → `staging` → `main`. A push to either branch runs `.github/workflows/deploy.yml`, which deploys that branch's worker. The workflow needs the repository secret `CLOUDFLARE_API_TOKEN`, a Cloudflare API token that may edit Workers scripts and the `sportpath.app` zone's Workers routes.
 
-In Vercel, set `API_URL` for Production to the production API. Set it for Preview, limited to the `staging` branch, to the staging API.
+`www.sportpath.app` redirects to `https://sportpath.app` (see `next.config.ts`).
+
+Runtime values (`API_URL`, `GOOGLE_CLIENT_ID`, `APP_ENV`) are Worker variables in `wrangler.jsonc`, read at request time. One build serves both environments. On staging, `robots.txt` blocks all crawlers.
 
 ## Running locally
 
@@ -90,12 +92,14 @@ In Vercel, set `API_URL` for Production to the production API. Set it for Previe
    npm run dev
    ```
 
+   To run it on the Workers runtime instead, put the same values in `.dev.vars` and run `npm run preview`.
+
 ### Environment variables
 
 | Variable | Purpose |
 |---|---|
 | `API_URL` | Base URL of the API, including the version. Default: `http://localhost:4000/v1` |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Public Google OAuth web client id. Without it, the "Sign in with Google" button is hidden |
+| `GOOGLE_CLIENT_ID` | Public Google OAuth web client id. Without it, the "Sign in with Google" button is hidden |
 
 ## Adding a sport
 
