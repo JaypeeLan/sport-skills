@@ -70,7 +70,9 @@ export default function GoogleButton({
   return (
     <>
       <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" onReady={render} />
-      <div ref={container} className="flex min-h-11 w-full justify-center" />
+      {/* The page uses a dark color scheme. Google's iframe uses light, and when the two
+          differ the browser paints the iframe white. A light scheme here keeps it transparent. */}
+      <div ref={container} className="flex min-h-11 w-full justify-center" style={{ colorScheme: 'light' }} />
     </>
   )
 }
