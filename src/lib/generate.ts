@@ -1,9 +1,7 @@
 import 'server-only'
-import Groq from 'groq-sdk'
+import { completeJson } from './llm'
 import { findVideo } from './video'
 import type { LessonContent } from './types'
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 const LESSON_SYSTEM = `You are an expert coach writing a single practical lesson for a physical skill.
 
@@ -35,10 +33,8 @@ export async function generateLesson(input: {
   lessonTitle: string
   lessonSummary: string
 }): Promise<LessonContent | null> {
-  const chat = await groq.chat.completions.create({
-    model: 'openai/gpt-oss-20b',
-    response_format: { type: 'json_object' },
-    messages: [
+  const parsed = await completeJson(
+    [
       { role: 'system', content: LESSON_SYSTEM },
       {
         role: 'user',
@@ -52,13 +48,12 @@ Lesson summary: ${input.lessonSummary}
 Write this lesson.`,
       },
     ],
-    max_tokens: 2500,
-  })
+    2500,
+  )
 
-  const parsed = JSON.parse(chat.choices[0].message.content ?? '{}')
-  if (!parsed.steps?.length) return null
+  const lesson = parsed as unknown as LessonContent
+  if (!lesson.steps?.length) return null
 
-  const lesson = parsed as LessonContent
   lesson.video = await findVideo(lesson.videoQuery)
   return lesson
 }

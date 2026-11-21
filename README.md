@@ -17,7 +17,7 @@ Activity → Goal → Experience → Track → Module → Lesson
 
 1. The learner picks an activity (62 available), then a goal specific to that
    activity, then their current experience level.
-2. Groq generates a progressive curriculum — 4–6 modules from foundations to
+2. A light model on OpenRouter generates a progressive curriculum — 4–6 modules from foundations to
    advanced, each with concrete, practisable lessons.
 3. Lessons are generated on demand and cached, so returning to a lesson shows
    the same content the learner practised against.
@@ -47,7 +47,7 @@ build bad habits.
 |---|---|
 | Framework | Next.js 16 (App Router, server components, server actions) |
 | Auth + DB | Supabase (Postgres + Row Level Security) |
-| AI | Groq (`openai/gpt-oss-20b`) for curriculum and lesson generation |
+| AI | OpenRouter (`openai/gpt-oss-20b` by default) for curriculum and lesson generation |
 | Video | YouTube Data API v3 |
 | Styling | Tailwind CSS v4 + shadcn/ui |
 
@@ -68,7 +68,8 @@ row-level security policies.
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key |
-| `GROQ_API_KEY` | Curriculum and lesson generation |
+| `OPENROUTER_API_KEY` | Curriculum and lesson generation |
+| `OPENROUTER_MODEL` | Optional. OpenRouter model id. Default: `openai/gpt-oss-20b` |
 | `YOUTUBE_API_KEY` | Resolves lessons to real coaching videos |
 
 `YOUTUBE_API_KEY` is optional — without it, lessons fall back to a search link

@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server'
-import Groq from 'groq-sdk'
-
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+import { completeJson } from '@/lib/llm'
 
 export async function POST(req: Request) {
   const { activity, goal, experience } = await req.json()
 
-  const chat = await groq.chat.completions.create({
-    model: 'openai/gpt-oss-20b',
-    response_format: { type: 'json_object' },
-    messages: [
+  const track = await completeJson(
+    [
       {
         role: 'system',
         content: `You are an expert coach who designs progressive learning curricula for physical skills.
@@ -44,9 +40,8 @@ Current experience: ${experience ?? 'not specified'}
 Design the learning track.`,
       },
     ],
-    max_tokens: 2500,
-  })
+    2500,
+  )
 
-  const raw = chat.choices[0].message.content ?? '{}'
-  return NextResponse.json(JSON.parse(raw))
+  return NextResponse.json(track)
 }
