@@ -60,6 +60,32 @@ export async function resetPasswordAction(email: string, code: string, password:
   return startSession('/auth/password/reset', { email, code, password })
 }
 
+// Sends a verification code. The API skips it if one went out in the last minute.
+export async function sendVerificationAction(): Promise<AuthResult> {
+  try {
+    await api('/auth/email/verify/send', { method: 'POST' })
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 429) {
+      return { error: 'Too many requests. Wait a minute and try again.' }
+    }
+    if (error instanceof ApiError && error.status < 500) return { error: error.message }
+    // redirect() for an expired session works by throwing, so let it through.
+    if (!(error instanceof ApiError)) throw error
+    return { error: 'Something went wrong. Please try again.' }
+  }
+}
+
+export async function verifyEmailAction(code: string): Promise<AuthResult> {
+  try {
+    await api('/auth/email/verify', { method: 'POST', body: JSON.stringify({ code }) })
+  } catch (error) {
+    if (error instanceof ApiError && error.status < 500) return { error: error.message }
+    if (!(error instanceof ApiError)) throw error
+    return { error: 'Something went wrong. Please try again.' }
+  }
+  revalidatePath('/', 'layout')
+}
+
 // Generates the curriculum and saves the track in one API call.
 // Returns the error message, because Next.js hides thrown errors from the client in production.
 export async function createTrackAction(input: {
