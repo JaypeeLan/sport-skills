@@ -207,7 +207,7 @@ export default async function Home() {
             </div>
 
             <p className="lp-rise mt-6 text-sm text-slate-400" style={delay(560)}>
-              Free to use. {ACTIVITIES.length} activities and {GOAL_COUNT} goals to choose from.
+              {ACTIVITIES.length} activities and {GOAL_COUNT} goals to choose from.
             </p>
           </div>
 
