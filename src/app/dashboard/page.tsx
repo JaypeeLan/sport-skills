@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import SignOutButton from '@/components/SignOutButton'
 import BadgeList from '@/components/badges/BadgeList'
 import { Plus, Trophy, Flame, BookOpen } from 'lucide-react'
+import BrandMark from '@/components/BrandMark'
 
 // Personal, signed-in content — never show it in search results.
 export const metadata: Metadata = {
@@ -46,7 +47,8 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-900">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
+          <Link href="/dashboard" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
             SportPath
           </Link>
           <div className="flex items-center gap-4">

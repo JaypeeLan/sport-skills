@@ -9,6 +9,7 @@ import { safeNext } from '@/lib/safe-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
+import BrandMark from '@/components/BrandMark'
 
 export default function AuthForm({ googleClientId }: { googleClientId: string | undefined }) {
   const router = useRouter()
@@ -57,7 +58,8 @@ export default function AuthForm({ googleClientId }: { googleClientId: string | 
   return (
     <main className="flex min-h-screen flex-col bg-slate-950 text-white">
       <header className="mx-auto w-full max-w-6xl px-6 py-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
           SportPath
         </Link>
       </header>
