@@ -3,7 +3,7 @@ import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { api, ApiError, publicApi, SESSION_COOKIE } from './api'
-import type { Curriculum, LessonContent, Track } from './types'
+import type { Badge, Curriculum, LessonContent, SharedBadge, Track } from './types'
 
 // Data now comes from the SportPath API. These functions keep the shapes the
 // pages already use (snake_case fields), so the pages barely changed.
@@ -84,3 +84,18 @@ export async function getLessonContent(trackId: string, m: number, l: number): P
     throw error
   }
 }
+
+// Reading the list also awards badges that earlier progress earned.
+export async function listBadges(): Promise<Badge[]> {
+  return api<Badge[]>('/me/badges')
+}
+
+// Public: no session needed. Null when the link does not exist.
+export const getSharedBadge = cache(async (shareId: string): Promise<SharedBadge | null> => {
+  try {
+    return await publicApi<SharedBadge>(`/badges/${encodeURIComponent(shareId)}`)
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return null
+    throw error
+  }
+})

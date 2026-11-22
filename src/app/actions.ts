@@ -95,6 +95,15 @@ export async function toggleCompleteAction(trackId: string, m: number, l: number
   return completed
 }
 
+// Returns the id for the badge's public link at /b/<id>.
+export async function shareBadgeAction(badgeId: string) {
+  const { shareId } = await api<{ shareId: string }>(`/me/badges/${encodeURIComponent(badgeId)}/share`, {
+    method: 'POST',
+  })
+  revalidatePath('/dashboard')
+  return shareId
+}
+
 export async function signOutAction() {
   const store = await cookies()
   const token = store.get(SESSION_COOKIE)?.value
