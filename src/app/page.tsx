@@ -11,6 +11,7 @@ import { SITE } from '@/lib/site'
 import CountUp from '@/components/landing/CountUp'
 import PhoneDemo from '@/components/landing/PhoneDemo'
 import Reveal from '@/components/landing/Reveal'
+import BrandMark from '@/components/BrandMark'
 
 // The brand typeface. It is scoped to this page, so the signed-in app keeps its own font.
 const inter = Inter({ subsets: ['latin'] })
@@ -79,13 +80,7 @@ function delay(ms: number): CSSProperties {
 function Logo() {
   return (
     <span className="flex items-center gap-2.5 text-lg font-bold tracking-tight">
-      <svg viewBox="0 0 32 32" className="h-7 w-7" aria-hidden>
-        <rect width="32" height="32" rx="7.5" fill="#0f172a" />
-        <rect x="6" y="20" width="5.5" height="6" rx="2.75" fill="#34d399" />
-        <rect x="13.25" y="15" width="5.5" height="11" rx="2.75" fill="#10b981" />
-        <rect x="20.5" y="9.5" width="5.5" height="16.5" rx="2.75" fill="#059669" />
-        <circle cx="23.25" cy="6.5" r="3" fill="#bef264" />
-      </svg>
+      <BrandMark />
       {SITE.name}
     </span>
   )

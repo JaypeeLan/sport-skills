@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { BADGE_LABEL, formatEarned } from '@/lib/badges'
 import { getSharedBadge } from '@/lib/db'
 import { SITE } from '@/lib/site'
+import BrandMark from '@/components/BrandMark'
 
 type Props = { params: Promise<{ shareId: string }> }
 
@@ -37,7 +38,8 @@ export default async function SharedBadgePage({ params }: Props) {
   return (
     <main className="flex min-h-screen flex-col bg-slate-950 text-white">
       <header className="mx-auto w-full max-w-3xl px-6 py-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
           {SITE.name}
         </Link>
       </header>

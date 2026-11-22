@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { BRAND_MARK_DATA_URL, BRAND_TILE } from '@/lib/brand'
 import { SITE } from '@/lib/site'
 
 export const alt = `${SITE.name} — ${SITE.tagline}`
@@ -24,14 +25,16 @@ export default function OpengraphImage() {
           <div
             style={{
               display: 'flex',
-              alignItems: 'flex-end',
-              gap: 10,
-              height: 72,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 96,
+              height: 96,
+              borderRadius: 24,
+              backgroundColor: BRAND_TILE,
+              overflow: 'hidden',
             }}
           >
-            <div style={{ width: 22, height: 28, borderRadius: 11, backgroundColor: '#34d399' }} />
-            <div style={{ width: 22, height: 46, borderRadius: 11, backgroundColor: '#10b981' }} />
-            <div style={{ width: 22, height: 68, borderRadius: 11, backgroundColor: '#059669' }} />
+            <img src={BRAND_MARK_DATA_URL} width={112} height={112} alt="" />
           </div>
           <div style={{ fontSize: 52, fontWeight: 700, letterSpacing: -1 }}>{SITE.name}</div>
         </div>

@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react'
 import { sendVerificationAction, signOutAction, verifyEmailAction } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import BrandMark from '@/components/BrandMark'
 
 const FIELD = 'border-slate-800 bg-slate-900 text-white'
 
@@ -51,7 +52,8 @@ export default function VerifyForm({ email, next }: { email: string; next: strin
   return (
     <main className="flex min-h-screen flex-col bg-slate-950 text-white">
       <header className="mx-auto w-full max-w-6xl px-6 py-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
           SportPath
         </Link>
       </header>

@@ -7,6 +7,7 @@ import { ACTIVITIES, EXPERIENCE_LEVELS, getActivity } from '@/lib/activities'
 import { createTrackAction } from '@/app/actions'
 import ActivityPicker from '@/components/ActivityPicker'
 import { ArrowLeft, Loader2 } from 'lucide-react'
+import BrandMark from '@/components/BrandMark'
 
 function Onboarding() {
   const router = useRouter()
@@ -50,7 +51,8 @@ function Onboarding() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+        <Link href="/" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
           SportPath
         </Link>
         <span className="text-sm text-slate-500">Step {step} of 3</span>
