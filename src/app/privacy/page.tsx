@@ -88,7 +88,7 @@ export default function PrivacyPage() {
       <Section title="How long we keep data">
         <p>
           We keep your data while you have an account. When you delete your account in the app, we delete your account,
-          tracks, progress, photo and device tokens at once. Apple, Google and RevenueCat keep purchase records under
+          tracks, progress, photo, ratings, messages and device tokens at once. Apple, Google and RevenueCat keep purchase records under
           their own policies.
         </p>
       </Section>
@@ -97,7 +97,13 @@ export default function PrivacyPage() {
         <List
           items={[
             'Change your name, photo, email and password in the app, under Profile.',
-            'Delete your account and its data in the app, under Profile.',
+            <>
+              Delete your account and its data in the app, under Profile, or by email. See{' '}
+              <a href="/delete-account" className="text-emerald-400 hover:text-emerald-300">
+                how to delete your account
+              </a>
+              .
+            </>,
             'Turn notifications off in your device settings.',
             <>
               Ask for a copy of your data, or ask us to correct it, by emailing <SupportLink />.
