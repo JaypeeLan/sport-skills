@@ -8,6 +8,7 @@ import { getActivity } from '@/lib/activities'
 import { trackCover } from '@/lib/images'
 import { Badge } from '@/components/ui/badge'
 import { Check, ChevronRight, Lock } from 'lucide-react'
+import BrandMark from '@/components/BrandMark'
 
 const LEVEL_STYLES: Record<string, string> = {
   beginner: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
@@ -53,7 +54,8 @@ export default async function TrackPage({ params }: { params: Promise<{ id: stri
     <main className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-900">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-6">
-          <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
+          <Link href="/dashboard" className="flex items-center gap-2.5 text-lg font-semibold tracking-tight">
+          <BrandMark />
             SportPath
           </Link>
           <Link href="/onboarding" className="text-sm text-slate-400 hover:text-white">

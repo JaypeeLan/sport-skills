@@ -40,7 +40,7 @@ function toTrack(t: ApiTrack): TrackWithProgress {
 }
 
 // Returns null when signed out or when the session expired.
-export const getUser = cache(async (): Promise<{ id: string; email: string } | null> => {
+export const getUser = cache(async (): Promise<{ id: string; email: string; emailVerified: boolean } | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value
   if (!token) return null
   try {
