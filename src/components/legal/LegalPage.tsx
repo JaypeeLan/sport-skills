@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
-// Shared layout for the privacy policy and the terms of use.
+// Shared layout for the privacy policy, the terms of use and the account deletion page.
 export function LegalPage({ title, updated, children }: { title: string; updated: string; children: ReactNode }) {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-300">
@@ -18,6 +18,9 @@ export function LegalPage({ title, updated, children }: { title: string; updated
           </Link>
           <Link href="/terms" className="hover:text-white">
             Terms of use
+          </Link>
+          <Link href="/delete-account" className="hover:text-white">
+            Delete your account
           </Link>
           <span>&copy; {new Date().getFullYear()} Syntronware Limited</span>
         </footer>
