@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { listTracks, getUser } from '@/lib/db'
+import { listBadges, listTracks, getUser } from '@/lib/db'
 import { getActivity } from '@/lib/activities'
 import { trackCover } from '@/lib/images'
 import { Button } from '@/components/ui/button'
 import SignOutButton from '@/components/SignOutButton'
+import BadgeList from '@/components/badges/BadgeList'
 import { Plus, Trophy, Flame, BookOpen } from 'lucide-react'
 
 // Personal, signed-in content — never show it in search results.
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
   const user = await getUser()
-  const tracks = await listTracks()
+  const [tracks, badges] = await Promise.all([listTracks(), listBadges()])
 
   const withProgress = tracks.map((track) => {
     const { completed } = track
@@ -72,6 +73,11 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+
+        <h2 className="mb-4 mt-12 text-sm font-semibold uppercase tracking-wider text-slate-500">
+          Badges
+        </h2>
+        <BadgeList badges={badges} />
 
         <h2 className="mb-4 mt-12 text-sm font-semibold uppercase tracking-wider text-slate-500">
           Enrolled skills
