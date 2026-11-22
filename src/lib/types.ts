@@ -39,3 +39,27 @@ export interface LessonContent {
   mistakes: { mistake: string; fix: string }[]
   practice: string
 }
+
+export type BadgeKind = 'track' | 'module' | 'lessons' | 'streak'
+
+export interface Badge {
+  id: string
+  kind: BadgeKind
+  title: string
+  subtitle: string
+  // Activity id, for track and module badges.
+  activity: string | null
+  earnedAt: string
+  shareId: string | null
+}
+
+// A badge as anyone with its link sees it.
+export interface SharedBadge {
+  kind: BadgeKind
+  title: string
+  subtitle: string
+  earnedAt: string
+  // The learner's display name, if they set one.
+  name: string | null
+  activity: { id: string; name: string | null; icon: string | null } | null
+}
