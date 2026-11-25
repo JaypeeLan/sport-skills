@@ -1,68 +1,32 @@
 # SportPath
 
-An interactive learning platform that takes someone from complete beginner to
-advanced in any sport or physical skill, through personalised, visual,
-step-by-step learning tracks.
+The SportPath website at https://sportpath.app. It is a landing page only: learning happens in the
+iPhone and Android apps (the `skillpath-mobile` repository). The web app with sign-in, tracks and lessons
+was removed on 25 November 2026. Its old addresses (`/auth`, `/dashboard`, `/onboarding`, `/track`)
+redirect to the landing page.
 
-The interesting part isn't the number of sports. It's that there is **one
-learning engine**: adding a sport means adding its goals to a data file, not
-building a separate experience. Onboarding, curriculum generation and lesson
-rendering are all activity-agnostic.
+## Pages
 
-## How it works
-
-```
-Activity → Goal → Experience → Track → Module → Lesson
-```
-
-1. The learner picks an activity (62 available), then a goal specific to that
-   activity, then their current experience level.
-2. A light model on OpenRouter generates a progressive curriculum — 4–6 modules from foundations to
-   advanced, each with concrete, practisable lessons.
-3. Lessons are generated on demand and cached, so returning to a lesson shows
-   the same content the learner practised against.
-4. Modules unlock in order, so foundations can't be skipped.
-
-Goals matter: *"learn to swim from scratch"* and *"improve freestyle"* produce
-genuinely different tracks. Experience level shifts where the track starts — an
-experienced learner's track opens at intermediate rather than wasting their time.
-
-## The visual layer
-
-Physical skills can't be taught as a wall of text, but they also can't be taught
-with wrong information. Demonstrations resolve to **real coaching footage** via
-the YouTube Data API rather than generated imagery — a generated body position
-that is subtly wrong teaches bad technique, which is worse than no image at all.
-
-AI-generated art is used only for track cover images, where being decorative is
-the whole job.
-
-Each step also carries a short body-focus cue ("Head position", "Lead hand") so
-the learner knows what to concentrate on, plus the common mistakes that quietly
-build bad habits.
+| Page | Purpose |
+|---|---|
+| `/` | The landing page, with App Store and Google Play buttons (`src/lib/stores.ts`) |
+| `/privacy`, `/terms` | Legal pages that the stores link to |
+| `/delete-account` | How to delete an account. Google Play requires this page. |
+| `/b/<shareId>` | A badge a learner shared from the app. It reads the badge from the API. |
 
 ## Stack
 
 | Layer | Choice |
 |---|---|
-| Web | Next.js 16 (App Router, server components, server actions) |
-| Backend | The SportPath API in the private `skillpath-api` repository |
-| Styling | Tailwind CSS v4 + shadcn/ui |
+| Web | Next.js 16 (App Router, server components) |
+| Backend | The SportPath API in the private `skillpath-api` repository, for shared badges only |
+| Styling | Tailwind CSS v4 |
 
-```
-Browser -> Next.js (httpOnly session cookie) -> SportPath API (Bearer token) -> Postgres
-```
-
-The browser never calls the API directly. Next.js server code calls it with the
-session token from an httpOnly cookie. The web app holds no secrets and has no
-database access. Accounts, tracks, lessons, progress and AI generation all live
-in the API.
-
-After the mobile app (`skillpath-mobile`) ships, this web app becomes a landing page.
+The browser never calls the API directly. The site has no sign-in, no secrets and no database access.
 
 ## Environments
 
-The web app runs on Cloudflare Workers, through the OpenNext adapter. `wrangler.jsonc` defines both workers.
+The site runs on Cloudflare Workers, through the OpenNext adapter. `wrangler.jsonc` defines both workers.
 
 | Environment | Branch | Worker | URL | API |
 |---|---|---|---|---|
@@ -73,12 +37,12 @@ Changes go through pull requests: feature branch → `staging` → `main`. A pus
 
 `www.sportpath.app` redirects to `https://sportpath.app` (see `next.config.ts`).
 
-Runtime values (`API_URL`, `GOOGLE_CLIENT_ID`, `APP_ENV`) are Worker variables in `wrangler.jsonc`, read at request time. One build serves both environments. On staging, `robots.txt` blocks all crawlers.
+Runtime values (`API_URL`, `APP_ENV`) are Worker variables in `wrangler.jsonc`, read at request time. One build serves both environments. On staging, `robots.txt` blocks all crawlers.
 
 ## Running locally
 
-1. Start the API. Its README explains the setup.
-2. Configure and start the web app. It runs on http://localhost:3000.
+1. Start the API, if you work on the badge pages. Its README explains the setup.
+2. Configure and start the site. It runs on http://localhost:3000.
 
    ```bash
    npm install
@@ -98,12 +62,9 @@ Runtime values (`API_URL`, `GOOGLE_CLIENT_ID`, `APP_ENV`) are Worker variables i
 
 | Variable | Purpose |
 |---|---|
-| `API_URL` | Base URL of the API, including the version. Default: `http://localhost:4000/v1` |
-| `GOOGLE_CLIENT_ID` | Public Google OAuth web client id. Without it, the "Sign in with Google" button is hidden |
+| `API_URL` | Base URL of the API, including the version, for the badge pages. Default: `http://localhost:4000/v1` |
 
 ## Adding a sport
 
-Add an entry to `ACTIVITIES` in `src/activities/catalog.ts` in the API, with an
-id, name, icon, category and its own list of goals. Then copy the same entry to
-`src/lib/activities.ts` here. The web app keeps its own copy until it reads the
-catalog from the API's `/activities` route.
+Sports are added in the API (`src/activities/catalog.ts`). The landing page lists them from its own
+copy in `src/lib/activities.ts`, so copy a new entry there too.
