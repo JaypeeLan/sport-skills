@@ -2,18 +2,17 @@ import type { CSSProperties } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Inter } from 'next/font/google'
-import { redirect } from 'next/navigation'
-import { ArrowRight, Check, Play, TriangleAlert } from 'lucide-react'
+import { Check, Play, TriangleAlert } from 'lucide-react'
 import { ACTIVITIES, CATEGORY_LABELS } from '@/lib/activities'
-import { getUser } from '@/lib/db'
 import { HERO_IMAGES, unsplash } from '@/lib/images'
 import { SITE } from '@/lib/site'
 import CountUp from '@/components/landing/CountUp'
 import PhoneDemo from '@/components/landing/PhoneDemo'
 import Reveal from '@/components/landing/Reveal'
 import BrandMark from '@/components/BrandMark'
+import StoreButtons from '@/components/landing/StoreButtons'
 
-// The brand typeface. It is scoped to this page, so the signed-in app keeps its own font.
+// The brand typeface. It is scoped to this page, so the legal and badge pages keep their own font.
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -38,14 +37,9 @@ const structuredData = {
       '@type': 'SoftwareApplication',
       name: SITE.name,
       applicationCategory: 'EducationalApplication',
-      operatingSystem: 'Web',
+      operatingSystem: 'iOS, Android',
       description: SITE.description,
       url: SITE.url,
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
     },
   ],
 }
@@ -70,9 +64,6 @@ const STEPS = [
 ]
 
 const CARD = 'rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8'
-const PRIMARY_CTA =
-  'group inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-6 text-base font-semibold text-slate-950 transition hover:bg-emerald-300 active:scale-[0.98]'
-
 function delay(ms: number): CSSProperties {
   return { '--d': `${ms}ms` } as CSSProperties
 }
@@ -111,10 +102,7 @@ function ActivityMarquee({ items, reverse }: { items: typeof ACTIVITIES; reverse
   )
 }
 
-export default async function Home() {
-  // Signed-in learners belong on their dashboard, not the marketing page.
-  if (await getUser()) redirect('/dashboard')
-
+export default function Home() {
   return (
     <main className={`lp-root relative overflow-x-clip bg-slate-950 text-white ${inter.className}`}>
       <script
@@ -134,15 +122,12 @@ export default async function Home() {
             <a href="#lesson" className="hidden rounded-lg px-3 py-2 text-sm text-slate-300 hover:text-white sm:block">
               Inside a lesson
             </a>
-            <Link href="/auth?mode=login" className="rounded-lg px-3 py-2 text-sm text-slate-300 hover:text-white">
-              Sign in
-            </Link>
-            <Link
-              href="/auth"
+            <a
+              href="#get-the-app"
               className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
             >
-              Get started
-            </Link>
+              Get the app
+            </a>
           </nav>
         </div>
       </header>
@@ -188,17 +173,8 @@ export default async function Home() {
               technique, real demonstrations, and the mistakes to avoid.
             </p>
 
-            <div className="lp-rise mt-8 flex flex-wrap items-center gap-3" style={delay(440)}>
-              <Link href="/auth" className={PRIMARY_CTA}>
-                Build my track
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              <a
-                href="#how"
-                className="inline-flex h-12 items-center justify-center rounded-2xl border border-white/15 px-6 text-base font-semibold text-white transition hover:bg-white/5"
-              >
-                See how it works
-              </a>
+            <div className="lp-rise mt-8" style={delay(440)}>
+              <StoreButtons />
             </div>
 
             <p className="lp-rise mt-6 text-sm text-slate-400" style={delay(560)}>
@@ -474,7 +450,7 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------------------- CTA */}
-      <section className="mx-auto w-full max-w-6xl px-6 pb-24">
+      <section id="get-the-app" className="mx-auto w-full max-w-6xl scroll-mt-24 px-6 pb-24">
         <Reveal>
           <div className="relative overflow-hidden rounded-[2.5rem] border border-emerald-400/20 bg-gradient-to-br from-emerald-500/20 via-slate-900 to-slate-950 px-6 py-16 text-center sm:px-16 sm:py-24">
             <svg
@@ -498,12 +474,9 @@ export default async function Home() {
               Your first lesson is a few seconds away.
             </h2>
             <p className="relative mx-auto mt-5 max-w-xl text-lg text-slate-300">
-              Pick an activity, choose a goal, and start. iOS and Android apps are on the way.
+              Get SportPath on iPhone or Android. Pick an activity, choose a goal, and start.
             </p>
-            <Link href="/auth" className={`${PRIMARY_CTA} relative mt-8`}>
-              Build my track
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            <StoreButtons className="relative mt-8 justify-center" />
           </div>
         </Reveal>
       </section>
@@ -519,8 +492,8 @@ export default async function Home() {
             <Link href="/terms" className="hover:text-white">
               Terms
             </Link>
-            <Link href="/auth?mode=login" className="hover:text-white">
-              Sign in
+            <Link href="/delete-account" className="hover:text-white">
+              Delete account
             </Link>
           </div>
         </div>
