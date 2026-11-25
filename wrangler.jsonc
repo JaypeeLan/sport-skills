@@ -14,8 +14,7 @@
   // Public values only. Secrets would go in with `wrangler secret put`.
   "vars": {
     "APP_ENV": "production",
-    "API_URL": "https://api.sportpath.app/v1",
-    "GOOGLE_CLIENT_ID": "399820343385-qeeap1bt3ei0lmiu0m7pp66aulbno0n1.apps.googleusercontent.com"
+    "API_URL": "https://api.sportpath.app/v1"
   },
   "env": {
     "staging": {
@@ -24,8 +23,7 @@
       "routes": [{ "pattern": "staging.sportpath.app", "custom_domain": true }],
       "vars": {
         "APP_ENV": "staging",
-        "API_URL": "https://api-staging.sportpath.app/v1",
-        "GOOGLE_CLIENT_ID": "399820343385-qeeap1bt3ei0lmiu0m7pp66aulbno0n1.apps.googleusercontent.com"
+        "API_URL": "https://api-staging.sportpath.app/v1"
       }
     }
   }
